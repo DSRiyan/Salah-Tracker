@@ -1,513 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Salah History</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salah History</title>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<style>
-  :root{
-    --bg1:#f5efe6; --bg2:#e8dbc6;
-    --accent:#a38364; --muted:#6b5847;
-    --card:#fff8f0; --green:#8aa37b; --red:#b85c5c;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    min-height:100vh;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-    padding:18px;
-    color:var(--muted);
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-  }
+  <style>
+    :root {
+      --bg1: #cde5ff;
+      --bg2: #eaf6ff;
+      --card: white;
+      --accent: #4a83d6;
+      --muted: #4b6b86;
+      --bad: #d9534f;
+    }
 
-  .container{
-    width:100%;
-    max-width:820px;
-    background:rgba(255,255,255,0.96);
-    border-radius:14px;
-    padding:18px;
-    box-shadow:0 10px 40px rgba(0,0,0,0.10);
-  }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      font-family: Poppins, sans-serif;
+      padding: 18px;
+      display: flex;
+      justify-content: center;
+      color: var(--muted);
+    }
 
-  h2{ text-align:center; margin:6px 0 8px; color:var(--muted); }
-  h3{ font-size:15px; margin:8px 0 12px; text-align:center; color:var(--muted); }
+    .container {
+      max-width: 960px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(20, 48, 88, 0.12);
+    }
 
-  .row{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-  }
+    h2 {
+      text-align: center;
+      margin-bottom: 12px;
+    }
 
-  .card{
-    background:var(--card);
-    border-radius:12px;
-    padding:12px;
-    box-shadow:0 6px 18px rgba(0,0,0,0.06);
-    width:100%;
-  }
+    .card {
+      background: white;
+      padding: 16px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(10, 25, 50, 0.06);
+      margin-bottom: 16px;
+    }
 
-  .controls{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin-bottom:10px;
-  }
+    .monthContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+  margin-top: 5px;
+}
 
-  .selectBox{
-    appearance:none;
-    -webkit-appearance:none;
-    border:1px solid #e4d5c6;
-    background:var(--card);
-    padding:10px 12px;
-    border-radius:12px;
-    font-size:14px;
-    color:var(--muted);
-    box-shadow:0 4px 10px rgba(0,0,0,0.04);
-    min-width:160px;
-  }
+.monthLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
 
-  .muted { color:#8a6f56; font-size:13px; text-align:center; margin-top:6px; }
+.monthBox {
+  width: 80%;
+  max-width: 300px;
+}
 
-  .chartWrap{
-    width:100%;
-    max-height:300px;
-    height:260px;
-    border-radius:12px;
-    overflow:hidden;
-    padding:8px 12px;
-    background:var(--card);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  canvas{ width:100% !important; height:100% !important; display:block; }
+.selectModern {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #f6fbff;
+  box-shadow: 0 6px 18px rgba(10, 25, 50, 0.06);
+  text-align: center;
+  color: var(--accent);
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
 
-  .tableWrap{ overflow:auto; max-height:320px; margin-top:10px; }
-  table{ width:100%; border-collapse:collapse; font-size:14px; }
-  th,td{ padding:10px; border:1px solid #eee; text-align:center; background:white; }
-  th{ background:#f3e6d6; color:var(--muted); font-weight:700; }
+.selectModern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(10, 25, 50, 0.10);
+}
 
-  .btn{
-    width:100%;
-    margin-top:14px;
-    padding:12px;
-    border-radius:10px;
-    border:0;
-    background:var(--accent);
-    color:white;
-    font-weight:700;
-    cursor:pointer;
-    box-shadow:0 6px 18px rgba(0,0,0,0.06);
-  }
+.selectModern:focus {
+  outline: 2px solid var(--accent);
+}
 
-  @media (max-width:640px){
-    .chartWrap{ height:220px; max-height:220px; }
-    .selectBox{ min-width:140px; padding:9px 10px; }
-  }
-</style>
+
+    .selectBox {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #e7eefc;
+      margin-top: 6px;
+    }
+
+    .statsRow {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 160px;
+      background: #f6fbff;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat h4 {
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    .stat p {
+      color: var(--accent);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .tableWrap {
+      margin-top: 12px;
+      max-height: 420px;
+      overflow: auto;
+      border-radius: 12px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eaf0fb;
+      text-align: center;
+    }
+
+    th {
+      background: #f0f6ff;
+      position: sticky;
+      top: 0;
+    }
+
+    .deleteBtn {
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px;
+      background: var(--bad);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btnBack {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container" role="main">
-  <h2>Your Salah Analysis</h2>
+  <div class="container">
+    <h2>Salah History</h2>
 
-  <!-- WEEKLY -->
-  <div class="card" style="margin-bottom:14px;">
-    <h3>Weekly Completion (Mon → Sun)</h3>
+    <!-- MONTHLY SUMMARY ONLY -->
+    <div class="card">
+      <h3 style="text-align:center;margin-bottom:10px;">Monthly Summary</h3>
 
-    <div class="controls" style="justify-content:center;">
-      <label for="weekPicker" style="font-size:13px;color:#8a6f56">Pick a day (week)</label>
-      <input id="weekPicker" class="selectBox" type="date" aria-label="Week picker" />
+      <div class="monthContainer">
+  
+        <div class="monthBox">
+          <input type="month" id="monthPicker" class="selectModern">
+        </div>
+      </div>
+
+
+      <div class="statsRow">
+        <div class="stat">
+          <h4>Total Completed Salah</h4>
+          <p id="completedTotal">0</p>
+        </div>
+
+        <div class="stat">
+          <h4>Total Missed Salah</h4>
+          <p id="missedTotal">0</p>
+        </div>
+
+        <div class="stat">
+          <h4>Days With All 5</h4>
+          <p id="daysAll5">0</p>
+        </div>
+      </div>
+
+      <div style="width:100%;height:280px;margin-top:12px;">
+        <canvas id="monthlyChart"></canvas>
+      </div>
     </div>
 
-    <div class="chartWrap" aria-hidden="false">
-      <canvas id="weeklyChart" role="img" aria-label="Weekly chart"></canvas>
+    <!-- DAILY TABLE -->
+    <div class="card">
+      <h3 style="text-align:center;margin-bottom:10px;">Daily Records (Newest First)</h3>
+
+      <div class="tableWrap">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Missed</th>
+              <th>All 5?</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="muted">Y-axis: number of prayers (0–5). X-axis: Mon → Sun.</div>
+    <button class="btnBack" onclick="goBack()">Back to Tracker</button>
   </div>
 
-  <!-- MONTHLY -->
-  <div class="card" style="margin-bottom:14px;">
-    <h3>Monthly Salah Completion</h3>
+  <script>
+    const STORAGE_KEY = "salahHistory";
+    const PRAYERS = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
 
-    <div class="controls" style="justify-content:center;">
-      <label for="monthPicker" style="font-size:13px;color:#8a6f56">Pick month</label>
-      <input id="monthPicker" class="selectBox" type="month" aria-label="Month picker" />
-    </div>
-
-    <div class="chartWrap">
-      <canvas id="monthlyChart" role="img" aria-label="Monthly pie"></canvas>
-    </div>
-
-    <div class="muted">Totals use actual days in the month (days × 5).</div>
-  </div>
-
-  <!-- TABLE -->
-  <div class="card">
-    <h3>Daily Records</h3>
-    <div class="tableWrap">
-      <table id="historyTable" aria-live="polite">
-        <thead>
-          <tr><th>Date</th><th>Missed Salah</th><th>Full 5?</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
-  <button class="btn" onclick="goBack()">Back</button>
-</div>
-
-<script>
-/* ============================
-   Normalization & conversion
-   ============================
-   We support several old formats and convert to the canonical format:
-   {
-     date: "YYYY-MM-DD",
-     fajr: true,
-     dhuhr: false,
-     asr: true,
-     maghrib: false,
-     isha: true,
-     completedAll: boolean (optional)
-   }
-   or
-   {
-     date: "YYYY-MM-DD",
-     prayers: { Fajr: true, Dhuhr: false, ... }  (old)
-   }
-   or old 'missed' array format { date, missed: ["Asr","Maghrib"], completedAll:false }
-   Conversion runs once and saves back to localStorage under same key.
-   ============================ */
-
-const STORAGE_KEY = 'salahHistory';
-const CONVERTED_FLAG = 'salahHistory_converted_v1';
-
-// prayer keys we expect
-const PRAYERS_ORDER = ['fajr','dhuhr','asr','maghrib','isha'];
-const PRAYERS_CAP = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-
-// load raw array
-let raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-if(!Array.isArray(raw)) raw = [];
-
-// conversion: only run if flag not present
-if(!localStorage.getItem(CONVERTED_FLAG)) {
-  const converted = raw.map(entry => normalizeEntry(entry)).filter(Boolean);
-  raw = converted;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(raw));
-  localStorage.setItem(CONVERTED_FLAG, 'true');
-}
-
-// normalize function: returns standardized object
-function normalizeEntry(e) {
-  // if falsy, skip
-  if(!e || typeof e !== 'object') return null;
-
-  // normalize date to ISO YYYY-MM-DD if possible
-  let dateISO = '';
-  if(e.date) {
-    // try to parse the date; many JS engines parse "Wed, Nov 26, 2025"
-    const dt = new Date(e.date);
-    if(!isNaN(dt)) {
-      dateISO = dt.toISOString().slice(0,10);
-    } else {
-      // fallback: if e.date already looks like YYYY-MM-DD keep
-      if(typeof e.date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(e.date)) {
-        dateISO = e.date.slice(0,10);
-      } else {
-        // last fallback: keep original string
-        dateISO = e.date;
-      }
+    function loadHistory() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     }
-  } else {
-    // no date — skip entry
-    return null;
-  }
 
-  // If entry already has flat keys (fajr etc), use them
-  const flatHas = PRAYERS_ORDER.every(k => (k in e) || (k in (e.prayers || {})));
-  // Build prayers object result
-  const prayersObj = {};
-  PRAYERS_ORDER.forEach(p => prayersObj[p] = false);
+    function normalize(entry) {
+      if (!entry) return null;
 
-  // Case A: entry has top-level keys fajr/dhuhr etc
-  let found = false;
-  PRAYERS_ORDER.forEach(p => {
-    if(p in e) {
-      prayersObj[p] = !!e[p];
-      found = true;
+      let iso = entry.dateISO;
+      if (!iso && entry.date) iso = new Date(entry.date).toISOString().slice(0, 10);
+      if (!iso) return null;
+
+      let prayers = {};
+      PRAYERS.forEach(p => prayers[p] = entry.prayers?.[p] ?? false);
+
+      let missed = PRAYERS.filter(p => !prayers[p]);
+
+      return {
+        dateISO: iso,
+        prayers: prayers,
+        missed: missed,
+        completedAll: missed.length === 0
+      };
     }
-  });
 
-  if(!found && e.prayers && typeof e.prayers === 'object') {
-    // Case B: e.prayers likely has capitalized keys or lowercase; map them
-    PRAYERS_ORDER.forEach((p, i) => {
-      // check lowercase
-      if(p in e.prayers) {
-        prayersObj[p] = !!e.prayers[p];
-      } else if(PRAYERS_CAP[i] in e.prayers) {
-        prayersObj[p] = !!e.prayers[PRAYERS_CAP[i]];
-      } else {
-        // maybe boolean stored as string 'true'/'false'
-        const cap = PRAYERS_CAP[i];
-        if(typeof e.prayers[cap] === 'string') prayersObj[p] = e.prayers[cap].toLowerCase() === 'true';
-        else if(typeof e.prayers[p] === 'string') prayersObj[p] = e.prayers[p].toLowerCase() === 'true';
-      }
-    });
-    found = true;
-  }
+    function getCleanHistory() {
+      return loadHistory().map(normalize).filter(Boolean).sort((a, b) => new Date(b.dateISO) - new Date(a.dateISO));
+    }
 
-  // Case C: old 'missed' array
-  if(!found && Array.isArray(e.missed)) {
-    // missed contains names maybe 'Asr', 'asr', or 'asr'
-    const missedLower = e.missed.map(x => String(x).toLowerCase());
-    PRAYERS_ORDER.forEach(p => {
-      prayersObj[p] = !missedLower.includes(p) && !missedLower.includes(p.charAt(0).toUpperCase()+p.slice(1));
-    });
-    found = true;
-  }
+    /* MONTHLY SUMMARY */
+    let monthlyChart;
 
-  // If nothing found, treat entry as all false (missed all) OR try to detect keys with uppercase top-level
-  if(!found) {
-    // sometimes stored with capitalized top-level: e.Fajr etc
-    const capFound = PRAYERS_CAP.some(cap => cap in e);
-    if(capFound) {
-      PRAYERS_CAP.forEach((cap, idx) => {
-        const lower = PRAYERS_ORDER[idx];
-        prayersObj[lower] = !!e[cap];
+    function renderMonthly() {
+      let monthVal = document.getElementById("monthPicker").value;
+      if (!monthVal) monthVal = new Date().toISOString().slice(0, 7);
+
+      const [yr, mo] = monthVal.split("-").map(Number);
+
+      const hist = getCleanHistory().filter(e => {
+        const d = new Date(e.dateISO);
+        return d.getFullYear() === yr && d.getMonth() + 1 === mo;
       });
-      found = true;
-    }
-  }
 
-  // compute completedAll
-  const completedAll = PRAYERS_ORDER.every(p => prayersObj[p] === true);
+      const days = new Date(yr, mo, 0).getDate();
+      const totalPossible = days * 5;
 
-  // final normalized entry: date ISO and prayers object
-  return {
-    date: dateISO,
-    prayers: prayersObj,
-    completedAll: completedAll
-  };
-}
+      let completed = 0;
+      let daysAll5 = 0;
 
-/* At this point 'raw' is normalized array in new format */
-let normalizedHistory = raw.slice(); // working copy
+      hist.forEach(e => {
+        let done = PRAYERS.reduce((s, p) => s + (e.prayers[p] ? 1 : 0), 0);
+        completed += done;
+        if (done === 5) daysAll5++;
+      });
 
-/* Utility helpers */
-function toISO(d) {
-  const dt = new Date(d);
-  if(isNaN(dt)) return '';
-  return dt.toISOString().slice(0,10);
-}
-function isoToReadable(isoStr) {
-  const dt = new Date(isoStr);
-  if(isNaN(dt)) return isoStr;
-  return dt.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric', year:'numeric' });
-}
+      let missed = totalPossible - completed;
 
-/* Weekly helpers */
-function getMonday(date) {
-  const d = new Date(date);
-  const day = (d.getDay() + 6) % 7; // Mon=0
-  const monday = new Date(d);
-  monday.setDate(d.getDate() - day);
-  monday.setHours(0,0,0,0);
-  return monday;
-}
+      document.getElementById("completedTotal").textContent = completed;
+      document.getElementById("missedTotal").textContent = missed;
+      document.getElementById("daysAll5").textContent = daysAll5;
 
-function buildWeekDays(centerDate) {
-  const monday = getMonday(centerDate || new Date());
-  const days = [];
-  for(let i=0;i<7;i++){
-    const dd = new Date(monday);
-    dd.setDate(monday.getDate() + i);
-    days.push(dd);
-  }
-  return days;
-}
-
-function countPrayersForISO(iso) {
-  if(!iso) return 0;
-  const entry = normalizedHistory.find(e => (toISO(e.date) || e.date) === iso);
-  if(!entry || !entry.prayers) return 0;
-  return Object.values(entry.prayers).filter(v => v === true).length;
-}
-
-/* Chart instances */
-let weeklyChart = null;
-let monthlyChart = null;
-
-/* Render weekly */
-function renderWeekly(centerDate) {
-  const days = buildWeekDays(centerDate || new Date());
-  const labels = days.map(d => d.toLocaleDateString(undefined, { weekday:'short' })); // Mon..Sun
-  const isoList = days.map(d => toISO(d));
-  const values = isoList.map(iso => countPrayersForISO(iso));
-
-  const ctx = document.getElementById('weeklyChart').getContext('2d');
-  if(weeklyChart) weeklyChart.destroy();
-
-  weeklyChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Prayers Completed',
-        data: values,
-        backgroundColor: values.map(v => v > 0 ? 'rgba(138,172,123,0.95)' : 'rgba(138,172,123,0.25)'),
-        borderRadius: 8,
-        barPercentage: 0.64
-      }]
-    },
-    options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      animation: { duration: 300 },
-      plugins: {
-        legend: { display:false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.parsed.y} / 5 prayers`
-          }
-        }
-      },
-      scales: {
-        x: { grid: { display:false }, ticks:{ color: 'var(--muted)' }, title:{ display:false } },
-        y: {
-          beginAtZero:true,
-          min:0,
-          max:5,
-          ticks:{ stepSize:1, color: 'var(--muted)' },
-          title: { display:true, text:'Number of prayers', color: '#8a6f56' }
-        }
-      }
-    }
-  });
-}
-
-/* Monthly chart */
-function renderMonthly(yearMonth) {
-  // yearMonth like '2025-11' or null => use current
-  let ym = yearMonth;
-  if(!ym) {
-    const d = new Date();
-    ym = d.toISOString().slice(0,7);
-  }
-  const [yStr,mStr] = ym.split('-');
-  const year = parseInt(yStr,10);
-  const month = parseInt(mStr,10); // 1-12
-
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const totalSalah = daysInMonth * 5;
-
-  // sum completed prayers in this month
-  let completed = 0;
-  normalizedHistory.forEach(entry => {
-    const dt = new Date(entry.date);
-    if(!isNaN(dt) && dt.getFullYear() === year && (dt.getMonth()+1) === month) {
-      if(entry.prayers) completed += Object.values(entry.prayers).filter(v => v === true).length;
-    }
-  });
-
-  const missed = Math.max(0, totalSalah - completed);
-
-  const ctx = document.getElementById('monthlyChart').getContext('2d');
-  if(monthlyChart) monthlyChart.destroy();
-
-  monthlyChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Completed Salah','Missed Salah'],
-      datasets: [{
-        data: [completed, missed],
-        backgroundColor: ['#8aa37b','#b85c5c'],
-        hoverOffset:6
-      }]
-    },
-    options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              const val = ctx.parsed;
-              const pct = totalSalah ? Math.round((val/totalSalah)*100) : 0;
-              return ` ${ctx.label}: ${val} (${pct}%)`;
+      const ctx = document.getElementById("monthlyChart").getContext("2d");
+      if (monthlyChart) monthlyChart.destroy();
+      monthlyChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Completed", "Missed"],
+          datasets: [{
+            data: [completed, missed],
+            backgroundColor: ["#4a83d6", "#d9534f"]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" },
+            tooltip: {
+              callbacks: {
+                label: (c) => `${c.label}: ${c.parsed}`
+              }
             }
           }
-        },
-        legend: { position:'bottom' }
-      },
-      cutout: '64%'
+        }
+      });
     }
-  });
-}
 
-/* Table render */
-function renderTable() {
-  const tbody = document.querySelector('#historyTable tbody');
-  tbody.innerHTML = '';
+    /* TABLE */
+    function renderTable() {
+      const tbody = document.querySelector("#historyTable tbody");
+      tbody.innerHTML = "";
 
-  // sort descending by date (newest first)
-  const sorted = normalizedHistory.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
-  sorted.forEach(entry => {
-    const tr = document.createElement('tr');
-    const missedList = PRAYERS_ORDER.filter(p => !(entry.prayers && entry.prayers[p])).map(s => s.charAt(0).toUpperCase()+s.slice(1));
-    const dateReadable = isoToReadable(entry.date);
-    const full5 = (missedList.length === 0) ? '✔️' : '❌';
-    const missedText = missedList.length ? missedList.join(', ') : '—';
-    tr.innerHTML = `<td>${dateReadable}</td><td>${missedText}</td><td>${full5}</td>`;
-    tbody.appendChild(tr);
-  });
-}
+      const hist = getCleanHistory();
 
-/* Init & events */
-const weekPicker = document.getElementById('weekPicker');
-const monthPicker = document.getElementById('monthPicker');
+      hist.forEach(e => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td>${formatDate(e.dateISO)}</td>
+      <td>${e.missed.length ? e.missed.map(x => x.charAt(0).toUpperCase() + x.slice(1)).join(", ") : "—"}</td>
+      <td>${e.completedAll ? "✔️" : "❌"}</td>
+      <td><button class="deleteBtn" data-id="${e.dateISO}">Delete</button></td>
+    `;
+        tbody.appendChild(tr);
+      });
 
-function setDefaultsAndRender() {
-  // set week picker to today
-  const todayISO = new Date().toISOString().slice(0,10);
-  weekPicker.value = todayISO;
+      document.querySelectorAll(".deleteBtn").forEach(btn => {
+        btn.onclick = () => deleteEntry(btn.dataset.id);
+      });
+    }
 
-  // set month picker to current month
-  const ym = new Date().toISOString().slice(0,7);
-  monthPicker.value = ym;
+    function deleteEntry(iso) {
+      let data = loadHistory();
+      data = data.filter(e => (e.dateISO || "").slice(0, 10) !== iso);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      renderAll();
+    }
 
-  renderAll();
-}
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "2-digit" });
+    }
 
-function renderAll() {
-  const wkDate = weekPicker.value ? new Date(weekPicker.value) : new Date();
-  renderWeekly(wkDate);
-  renderMonthly(monthPicker.value || null);
-  renderTable();
-}
+    /* INIT */
+    function renderAll() {
+      renderMonthly();
+      renderTable();
+    }
 
-weekPicker.addEventListener('change', renderAll);
-monthPicker.addEventListener('change', renderAll);
+    document.getElementById("monthPicker").onchange = renderAll;
+    document.getElementById("monthPicker").value = new Date().toISOString().slice(0, 7);
 
-function goBack(){ window.location.href = 'index.html'; }
+    renderAll();
 
-/* run init */
-setDefaultsAndRender();
+    function goBack() { window.location.href = "index.html"; }
+  </script>
 
-</script>
 </body>
+
 </html>
