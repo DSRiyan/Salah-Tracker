@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salah History</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  margin:0;
+  padding:20px;
+  font-family:"Poppins",sans-serif;
+  background:linear-gradient(135deg,#f5efe6,#e8dbc6);
+}
+
+.container{
+  max-width:700px;
+  background:white;
+  padding:26px;
+  border-radius:16px;
+  margin:auto;
+  box-shadow:0 6px 30px rgba(0,0,0,0.12);
+}
+
+h2,h3{
+  text-align:center;
+  color:#6b5847;
+  margin-bottom:20px;
+}
+
+.section{
+  margin-top:30px;
+}
+
+canvas{
+  background:#fff8f0;
+  padding:10px;
+  border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+#streakBox{
+  text-align:center;
+  background:#fff3df;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.08);
+  font-size:18px;
+  font-weight:600;
+  color:#6b5847;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+table th, table td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:center;
+}
+
+table th{
+  background:#f3e6d6;
+}
+
+.deleteBtn{
+  background:#d46a6a;
+  color:white;
+  padding:6px 10px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  margin-top:22px;
+  border:0;
+  background:#a38364;
+  color:white;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Your Salah Analysis</h2>
+
+  <!-- WEEKLY GRAPH -->
+  <div class="section">
+    <h3>Weekly Completion (Last 7 Days)</h3>
+    <canvas id="weeklyChart" height="230"></canvas>
+  </div>
+
+  <!-- MONTHLY GRAPH -->
+  <div class="section">
+    <h3>Monthly Completion!!</h3>
+    <canvas id="monthlyChart" height="230"></canvas>
+  </div>
+
+  <!-- STREAK BOX -->
+  <div class="section">
+    <h3>Your Current Streak 🔥</h3>
+    <div id="streakBox">0 Days</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section">
+    <h3>Daily History</h3>
+
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Missed Salah</th>
+          <th>All 5?</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <button class="btn" onclick="goBack()">Back:)</button>
+
+</div>
+
+
+<script>
+/* ---------------------------
+   LOAD HISTORY
+----------------------------*/
+const history = JSON.parse(localStorage.getItem("salahHistory") || "[]");
+
+/* ---------------------------
+   TABLE GENERATION
+----------------------------*/
+function loadTable(){
+  const tbody = document.querySelector("#historyTable tbody");
+  tbody.innerHTML = "";
+
+  history.forEach((entry, i) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${entry.date}</td>
+      <td>${entry.missed.length ? entry.missed.join(", ") : "—"}</td>
+      <td>${entry.completedAll ? "✔️" : "❌"}</td>
+      <td><button class="deleteBtn" onclick="deleteEntry(${i})">Delete</button></td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+/* ---------------------------
+   DELETE ENTRY
+----------------------------*/
+function deleteEntry(index){
+  history.splice(index,1);
+  localStorage.setItem("salahHistory", JSON.stringify(history));
+  loadTable();
+  loadWeeklyChart();
+  loadMonthlyChart();
+  updateStreak();
+}
+
+/* ---------------------------
+   WEEKLY CHART
+----------------------------*/
+function getWeeklyStats(){
+  const last7 = history.slice(-7);
+  return last7.map(entry => 5 - entry.missed.length);
+}
+
+let weeklyChart;
+function loadWeeklyChart(){
+  const ctx = document.getElementById("weeklyChart").getContext("2d");
+  if(weeklyChart) weeklyChart.destroy();
+
+  weeklyChart = new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:["1","2","3","4","5","6","7"],
+      datasets:[{
+        label:"Prayers Completed",
+        data:getWeeklyStats(),
+        backgroundColor:"#a38364",
+        borderRadius:10
+      }]
+    },
+    options:{
+      scales:{
+        y:{min:0,max:5}
+      }
+    }
+  });
+}
+
+/* ---------------------------
+   MONTHLY CHART
+----------------------------*/
+function getMonthlyStats(){
+  const totalPrayers = history.length * 5;
+  const prayed = history.reduce((sum, h)=> sum + (5 - h.missed.length), 0);
+  const percent = totalPrayers ? Math.round((prayed / totalPrayers) * 100) : 0;
+  return percent;
+}
+
+let monthlyChart;
+function loadMonthlyChart(){
+  const ctx = document.getElementById("monthlyChart").getContext("2d");
+  if(monthlyChart) monthlyChart.destroy();
+
+  const percent = getMonthlyStats();
+
+  monthlyChart = new Chart(ctx,{
+    type:"doughnut",
+    data:{
+      labels:["Completed","Remaining"],
+      datasets:[{
+        data:[percent, 100-percent],
+        backgroundColor:["#8aa37b","#decab8"],
+      }]
+    },
+    options:{
+      cutout:"70%",
+    }
+  });
+}
+
+/* ---------------------------
+   STREAK SYSTEM
+----------------------------*/
+function updateStreak(){
+  let streak = 0;
+
+  // Count from last entry backwards
+  for(let i = history.length - 1; i >= 0; i--){
+    if(history[i].completedAll){
+      streak++;
+    } else break;
+  }
+
+  document.getElementById("streakBox").textContent = streak + " Day(s)";
+}
+
+/* ---------------------------
+   BACK
+----------------------------*/
+function goBack(){
+  window.location.href = "index.html";
+}
+
+/* INIT */
+loadTable();
+loadWeeklyChart();
+loadMonthlyChart();
+updateStreak();
+</script>
+
+</body>
+</html>
