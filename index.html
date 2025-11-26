@@ -4,702 +4,687 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <title>Your Salah Tracker</title>
+  <title>Salah Tracker</title>
 
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
-    /* ------------------------------ */
-    /*           FONTS + ROOT         */
-    /* ------------------------------ */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
     :root {
-      --bg1: #f5efe6;
-      --bg2: #e8dbc6;
-      --accent1: #a38364;
-      --accent2: #c8ab8b;
-      --text: #6b5847;
-      --glow: #ffd9b3;
+      --bg1: #cde5ff;
+      --bg2: #eaf6ff;
+      --card: rgba(255, 255, 255, 0.9);
+      --accent: #4a83d6;
+      --accent-2: #7fb3ff;
+      --text: #1f3b58;
+      --muted: #55708a;
+      --danger: #d9534f;
+      --glow: rgba(127, 179, 255, 0.45);
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      margin: 0;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      font-family: 'Poppins', sans-serif;
-      padding: 26px;
       min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      font-family: Poppins, sans-serif;
+      padding: 25px;
+      display: flex;
+      justify-content: center;
+      color: var(--text);
     }
 
-    /* ------------------------------ */
-    /*         FALLING STARS          */
-    /* ------------------------------ */
-    .star {
-      width: 6px;
-      height: 6px;
-      background: white;
-      position: fixed;
-      top: -10px;
-      border-radius: 50%;
-      opacity: 0.9;
-      animation: fall 3.5s linear infinite;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-10px);
-        opacity: 0
-      }
-
-      20% {
-        opacity: 1
-      }
-
-      100% {
-        transform: translateY(110vh);
-        opacity: 0
-      }
-    }
-
-    /* ------------------------------ */
-    /*             CONTAINER          */
-    /* ------------------------------ */
     .container {
       width: 100%;
-      max-width: 430px;
-      margin: auto;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 20px;
-      padding: 24px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-      animation: fadeIn .8s ease;
+      max-width: 400px;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(24, 44, 66, 0.12);
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px)
-      }
-
-      to {
-        opacity: 1;
-        transform: none
-      }
+    header {
+      margin-bottom: 10px;
     }
 
-    /* ------------------------------ */
-    /*             TITLE              */
-    /* ------------------------------ */
     #title {
-      text-align: center;
-      font-size: 26px;
-      color: var(--text);
+      font-size: 22px;
       font-weight: 700;
+      text-align: center;
     }
 
-    /* ------------------------------ */
-    /*             DATE               */
-    /* ------------------------------ */
+    #userGreeting {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
     #todayDate {
       text-align: center;
-      font-size: 14px;
-      color: #8a6f56;
-      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
     }
 
-    /* ------------------------------ */
-    /*       PRAYER CARD ITEMS        */
-    /* ------------------------------ */
     .prayer-item {
-      margin-top: 14px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      padding: 14px;
+      background: white;
+      border: 1px solid var(--accent);
+      border-radius: 7px;
+      margin-top: 17px;
       cursor: pointer;
-      transition: all .25s ease;
-      animation: slideIn .5s ease;
+      box-shadow: 0 6px 18px rgba(22, 50, 100, 0.06);
+      position: relative;
+      transition: all .18s ease;
     }
 
     .prayer-item:hover {
-      transform: translateX(6px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px)
-      }
-
-      to {
-        opacity: 1;
-        transform: none
-      }
+      transform: translateY(-7px);
+      box-shadow: 0 8px 26px rgba(22, 50, 100, 0.09);
     }
 
     input[type="checkbox"] {
-      transform: scale(1.3);
-      accent-color: var(--accent1);
+      transform: scale(1.2);
+      accent-color: var(--accent);
+      cursor: pointer;
     }
 
-    /* ------------------------------ */
-    /*        HEART POPUP ANIM        */
-    /* ------------------------------ */
     .heart {
       position: absolute;
-      color: red;
+      right: 50%;
+      transform: translateX(50%);
+      animation: floatUp 1.2s forwards;
       font-size: 18px;
-      animation: floatUp 1.2s ease forwards;
+      pointer-events: none;
     }
 
     @keyframes floatUp {
       0% {
         opacity: 0;
-        transform: translateY(20px) scale(.8)
+        transform: translateY(10px) scale(.9);
       }
 
       40% {
-        opacity: 1
+        opacity: 1;
       }
 
       100% {
         opacity: 0;
-        transform: translateY(-40px) scale(1.2)
+        transform: translateY(-36px) scale(1.15);
       }
     }
 
-    /* ------------------------------ */
-    /*     MISSED PRAYER MESSAGE      */
-    /* ------------------------------ */
     .missedMsg {
       position: absolute;
-      color: #ff4d4d;
-      font-size: 16px;
-      animation: floatMiss 1.2s ease forwards;
+      right: 50%;
+      transform: translateX(50%);
+      animation: floatMiss 1.2s forwards;
+      pointer-events: none;
+      color: var(--danger);
     }
 
     @keyframes floatMiss {
       0% {
         opacity: 0;
-        transform: translateY(20px) scale(.8)
+        transform: translateY(10px) scale(.9);
       }
 
       40% {
-        opacity: 1
+        opacity: 1;
       }
 
       100% {
         opacity: 0;
-        transform: translateY(-40px) scale(1.1)
+        transform: translateY(-36px) scale(1.1);
       }
     }
 
-    /* ------------------------------ */
-    /*              BUTTONS           */
-    /* ------------------------------ */
-    .btn {
-      width: 100%;
-      padding: 15px;
-      margin-top: 16px;
-      background: linear-gradient(135deg, var(--accent1), var(--accent2));
-      color: white;
-      font-weight: 700;
-      font-size: 14px;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.15);
-      transition: .2s;
-    }
+    /* --- Islamic Reminder Popup Styling --- */
 
-    .btn:active {
-      transform: scale(.98)
-    }
-
-    #resetBtn {
-      background: linear-gradient(135deg, #cc7777, #e6a3a3);
-    }
-
-    #historyBtn {
-      background: linear-gradient(135deg, #8aa37b, #b4d6a0);
-    }
-
-    /* ------------------------------ */
-    /*    FULL GLOW WHEN ALL 5 DONE   */
-    /* ------------------------------ */
-    .glowBox {
-      animation: glowPulse 1.4s infinite ease-in-out;
-    }
-
-    @keyframes glowPulse {
-      0% {
-        box-shadow: 0 0 0px var(--glow)
-      }
-
-      50% {
-        box-shadow: 0 0 22px var(--glow)
-      }
-
-      100% {
-        box-shadow: 0 0 0px var(--glow)
-      }
-    }
-
-    /* ------------------------------ */
-    /*       POPUP (NAME + REMINDER)  */
-    /* ------------------------------ */
-    .popup-bg {
+    #reminderPopup {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 20, 40, 0.45);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 999;
     }
 
-    .popup {
-      background: white;
-      width: 88%;
+    #reminderPopup .popup {
+      background: #ffffff;
+      width: 90%;
       max-width: 380px;
-      padding: 24px;
+      padding: 22px;
       border-radius: 18px;
       text-align: center;
-      animation: popIn .35s ease;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 28px rgba(0, 0, 50, 0.18);
+      animation: fadeInPopup 0.35s ease;
     }
 
-    @keyframes popIn {
-      0% {
-        opacity: 0;
-        transform: scale(0.6)
-      }
-
-      70% {
-        transform: scale(1.05)
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1)
-      }
-    }
-
-    .popup button {
-      margin-top: 16px;
-      padding: 12px 16px;
+    /* Headings (dark blue) */
+    #reminderQuranHeading,
+    #reminderHadithHeading {
+      font-size: 17px;
       font-weight: 700;
-      border: 0;
-      border-radius: 12px;
-      background: var(--accent1);
-      color: white;
+      margin-bottom: 10px;
+      color: #0d1a6b;
+      /* dark blue */
+    }
+
+    /* Paragraph text default */
+    #reminderQuran,
+    #reminderHadith {
+      font-size: 15px;
+      color: #000;
+      margin-bottom: 18px;
+      line-height: 1.45;
+    }
+
+    /* Popup button */
+    #reminderPopup button {
       width: 100%;
+      padding: 12px 14px;
+      color: white;
+      background: linear-gradient(135deg, var(--accent));
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    #reminderPopup button:hover {
+      transform: translateY(-2px);
+      background: #2e4ae0;
+    }
+
+    @keyframes fadeInPopup {
+      from {
+        opacity: 0;
+        transform: scale(0.85);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 26px rgba(24, 44, 66, 0.1);
+    }
+
+    #resetBtn {
+      background: linear-gradient(135deg, #ff7b7b, #ffb3b3);
+    }
+
+    .glowBox {
+      box-shadow: 0 0 32px 8px var(--glow) inset;
+    }
+
+    /* Popups */
+    .popup-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .popup {
+      width: 92%;
+      max-width: 380px;
+      background: white;
+      padding: 18px;
+      border-radius: 16px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    .nameInput {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid #e6eefc;
+      outline: none;
+      font-size: 15px;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Falling stars generated dynamically -->
-
   <div class="container">
+    <header>
+      <div id="title">Salah Tracker</div>
+      <div id="userGreeting"></div>
+    </header>
 
-    <h2 id="title">Salah Tracker</h2>
     <div id="todayDate"></div>
 
-    <!-- PRAYER ITEMS -->
-    <div class="prayer-item" onclick="togglePrayer('fajr', this)">
-      <label>Fajr</label><input type="checkbox" id="fajr">
+    <div class="prayer-item" onclick="togglePrayer('fajr', this, event)">
+      <label for="fajr">Fajr</label>
+      <input type="checkbox" id="fajr">
     </div>
 
-    <div class="prayer-item" onclick="togglePrayer('dhuhr', this)">
-      <label>Dhuhr</label><input type="checkbox" id="dhuhr">
+    <div class="prayer-item" onclick="togglePrayer('dhuhr', this, event)">
+      <label for="dhuhr">Dhuhr</label>
+      <input type="checkbox" id="dhuhr">
     </div>
 
-    <div class="prayer-item" onclick="togglePrayer('asr', this)">
-      <label>Asr</label><input type="checkbox" id="asr">
+    <div class="prayer-item" onclick="togglePrayer('asr', this, event)">
+      <label for="asr">Asr</label>
+      <input type="checkbox" id="asr">
     </div>
 
-    <div class="prayer-item" onclick="togglePrayer('maghrib', this)">
-      <label>Maghrib</label><input type="checkbox" id="maghrib">
+    <div class="prayer-item" onclick="togglePrayer('maghrib', this, event)">
+      <label for="maghrib">Maghrib</label>
+      <input type="checkbox" id="maghrib">
     </div>
 
-    <div class="prayer-item" onclick="togglePrayer('isha', this)">
-      <label>Isha</label><input type="checkbox" id="isha">
+    <div class="prayer-item" onclick="togglePrayer('isha', this, event)">
+      <label for="isha">Isha</label>
+      <input type="checkbox" id="isha">
     </div>
 
-    <!-- RESET BUTTON -->
-    <button id="resetBtn" class="btn" onclick="resetDay()">Reset for Next Day</button>
-
-    <!-- HISTORY BUTTON -->
-    <button id="historyBtn" class="btn" onclick="openHistory()">View Salah History</button>
-
+    <button id="resetBtn" class="btn" onclick="resetDay()">Save Today’s Record</button>
+    <button class="btn" onclick="openHistory()">View History</button>
   </div>
 
-  <!-- NAME POPUP -->
-  <div class="popup-bg" id="namePopupBG">
+  <!-- Name Popup -->
+  <div class="popup-bg" id="namePopup">
     <div class="popup">
-      <h3>Welcome! 💛</h3>
-      <p>Please enter your name</p>
-      <input id="userNameInput" style="padding:10px;width:100%;margin-top:14px;border-radius:8px;border:1px solid #ddd">
-      <button onclick="saveUserName()">Continue</button>
+      <h3>Welcome!</h3>
+      <p>Enter your first name</p>
+      <input class="nameInput" id="userNameInput" placeholder="e.g. Ronaldo">
+      <button class="btn" style="margin-top:12px" onclick="saveUserName()">Continue</button>
     </div>
   </div>
 
-  <!-- REMINDER POPUP -->
-  <div class="popup-bg" id="reminderPopupBG">
+  <!-- Islamic Reminder Popup -->
+  <div id="reminderPopup" class="popup-bg">
     <div class="popup">
-      <h3 id="reminderTitle">Today's Islamic Reminder 🌙</h3>
-      <p id="reminderText" style="margin-top:12px;color:var(--text)"></p>
-      <button onclick="closeReminder()">Thank You</button>
+      <h3 id="reminderQuranHeading">Quran Reminder</h3>
+      <p id="reminderQuran"></p>
+
+      <h3 id="reminderHadithHeading">Hadith Reminder</h3>
+      <p id="reminderHadith"></p>
+
+      <button onclick="closeReminder()">Jazakallahu Khair:)</button>
     </div>
   </div>
-
 
 
   <script>
-    /* 🌟 Falling Stars */
-    function spawnStars() {
-      for (let i = 0; i < 12; i++) {
-        const s = document.createElement("div");
-        s.className = "star";
-        s.style.left = Math.random() * 100 + "vw";
-        s.style.animationDelay = Math.random() * 3 + "s";
-        s.style.opacity = Math.random();
-        document.body.appendChild(s);
-      }
-    }
-    spawnStars();
-
-    /* ----------------------------- */
-    /*       DATE DISPLAY            */
-    /* ----------------------------- */
-    document.getElementById("todayDate").textContent =
-      "Today • " + new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
-
-    /* ----------------------------- */
-    /*       PRAYER TOGGLE           */
-    /* ----------------------------- */
-    function togglePrayer(key, box) {
-      const c = document.getElementById(key);
-      c.checked = !c.checked;
-
-      if (c.checked) {
-        createHeart(box);
-      }
-      checkAllPrayed();
-    }
-
-    function createHeart(box) {
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.textContent = "❤️";
-      h.style.left = "50%";
-      box.appendChild(h);
-      setTimeout(() => h.remove(), 1100);
-    }
-
-    /* ----------------------------- */
-    /*      MISSED MESSAGE           */
-    /* ----------------------------- */
-    function showMissed(box) {
-      const m = document.createElement("div");
-      m.className = "missedMsg";
-      m.textContent = "Ohh you missed this salah 💔";
-      m.style.left = "40%";
-      box.appendChild(m);
-      setTimeout(() => m.remove(), 7000);
-    }
-
-    /* ----------------------------- */
-    /*   GLOW WHEN ALL PRAYED        */
-    /* ----------------------------- */
-    function checkAllPrayed() {
-      const allChecked =
-        fajr.checked && dhuhr.checked && asr.checked && maghrib.checked && isha.checked;
-
-      if (allChecked) {
-        document.querySelector(".container").classList.add("glowBox");
-
-        confetti({
-          particleCount: 120,
-          spread: 100,
-          origin: { y: 0.7 }
-        });
-      }
-    }
-
-    /* ----------------------------- */
-    /*           RESET               */
-    /* ----------------------------- */
-    function resetDay() {
-      const prayers = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
-      let missed = [];
-      let completedAll = true;
-
-      prayers.forEach(p => {
-        const box = document.getElementById(p);
-        if (!box.checked) {
-          showMissed(box.parentElement);
-          missed.push(p);
-          completedAll = false;
-        }
-        box.checked = false;
-      });
-
-      document.querySelector(".container").classList.remove("glowBox");
-
-      /* SAVE TODAY'S RECORD */
-      const history = JSON.parse(localStorage.getItem("salahHistory") || "[]");
-      history.push({
-        date: new Date().toLocaleDateString(),
-        missed: missed,
-        completedAll: completedAll
-      });
-      localStorage.setItem("salahHistory", JSON.stringify(history));
-    }
-
-    /* ----------------------------- */
-    /*     GO TO HISTORY PAGE        */
-    /* ----------------------------- */
-    function openHistory() {
-      window.location.href = "history.html";
-    }
-
-    /* ----------------------------- */
-    /*     NAME POPUP LOGIC          */
-    /* ----------------------------- */
+    /* ---------- Name ---------- */
     window.onload = () => {
-      const name = localStorage.getItem("userName");
-
+      let name = localStorage.getItem("userName");
       if (!name) {
-        document.getElementById("namePopupBG").style.display = "flex";
+        document.getElementById("namePopup").style.display = "flex";
       } else {
-        document.getElementById("title").textContent = name + " Salah Tracker";
-        islamicReminder(name);
+        applyName(name);
+        showIslamicReminder();
       }
     };
 
     function saveUserName() {
-      const name = document.getElementById("userNameInput").value.trim();
+      let name = document.getElementById("userNameInput").value.trim();
       if (!name) return;
 
       localStorage.setItem("userName", name);
-      document.getElementById("namePopupBG").style.display = "none";
+      applyName(name);
+      document.getElementById("namePopup").style.display = "none";
 
-      document.getElementById("title").textContent = name + " Salah Tracker";
-
-      confetti({ particleCount: 130, spread: 120, origin: { y: 0.7 } });
-
-      setTimeout(() => islamicReminder(name), 500);
+      showIslamicReminder();
     }
 
-    /* ----------------------------- */
-    /*     DAILY REMINDER POPUP      */
-    /* ----------------------------- */
-    const quranVerses = [
+    function applyName(name) {
+      document.getElementById("title").textContent = `${name} Salah Tracker!!`;
+    }
+
+    /* ---------- Date ---------- */
+    document.getElementById("todayDate").textContent =
+      new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+
+    /* ---------- Prayer Toggling ---------- */
+    let programmaticToggle = false;
+    const ids = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
+
+    function togglePrayer(id, box, e) {
+      const cb = document.getElementById(id);
+      const directClick = e.target.closest("input,label");
+
+      if (directClick) {
+        setTimeout(checkAll, 0);
+        return;
+      }
+
+      programmaticToggle = true;
+      cb.checked = !cb.checked;
+
+      if (cb.checked) showHeart(box);
+
+      setTimeout(() => programmaticToggle = false, 0);
+      checkAll();
+    }
+
+    ids.forEach(p => {
+      document.getElementById(p).addEventListener("change", function () {
+        if (!programmaticToggle && this.checked) {
+          showHeart(this.parentElement);
+        }
+        checkAll();
+      });
+    });
+
+    function showHeart(box) {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = "❤️";
+      box.appendChild(h);
+      setTimeout(() => h.remove(), 1100);
+    }
+
+    function showMissed(box) {
+      const m = document.createElement("div");
+      m.className = "missedMsg";
+      m.textContent = "You missed this salah 💔";
+      box.appendChild(m);
+      setTimeout(() => m.remove(), 3000);
+    }
+
+    function checkAll() {
+      const all = ids.every(id => document.getElementById(id).checked);
+      const cont = document.querySelector(".container");
+
+      if (all) {
+        cont.classList.add("glowBox");
+        confetti({ particleCount: 100, spread: 100, origin: { y: 0.7 } });
+      } else {
+        cont.classList.remove("glowBox");
+      }
+    }
+
+    /* ---------- Save Day ---------- */
+    function resetDay() {
+      let missed = [];
+      let prayers = {};
+
+      ids.forEach(p => {
+        let c = document.getElementById(p).checked;
+        prayers[p] = c;
+        if (!c) missed.push(p);
+      });
+
+      let completedAll = missed.length === 0;
+
+      let history = JSON.parse(localStorage.getItem("salahHistory") || "[]");
+
+      history.push({
+        dateISO: new Date().toISOString().slice(0, 10),
+        prayers: prayers,
+        missed: missed.map(x => x.charAt(0).toUpperCase() + x.slice(1)),
+        completedAll: completedAll
+      });
+
+      localStorage.setItem("salahHistory", JSON.stringify(history));
+
+      ids.forEach(p => {
+        if (!document.getElementById(p).checked) {
+          showMissed(document.getElementById(p).parentElement);
+        }
+        document.getElementById(p).checked = false;
+      });
+
+      document.querySelector(".container").classList.remove("glowBox");
+
+      if (completedAll) {
+        confetti({ particleCount: 140, spread: 120, origin: { y: 0.7 } });
+      }
+    }
+
+    /* ---------- Reminders ---------- */
+    const quran = [
       { text: "Indeed, prayer prohibits immorality and wrongdoing.", ref: "Quran 29:45" },
       { text: "And establish prayer for My remembrance.", ref: "Quran 20:14" },
-      { text: "Successful indeed are the believers — those who humble themselves in prayer.", ref: "Quran 23:1-2" },
-      { text: "Guard strictly your prayers, especially the middle prayer.", ref: "Quran 2:238" },
-      { text: "Seek help through patience and prayer.", ref: "Quran 2:45" },
-      { text: "Your Lord has said: Call upon Me, and I will respond to you.", ref: "Quran 40:60" },
-      { text: "And Allah is Forgiving and Merciful.", ref: "Quran 2:173" },
-      { text: "Do not despair of the mercy of Allah. Indeed, Allah forgives all sins.", ref: "Quran 39:53" },
-      { text: "Allah does not burden a soul beyond what it can bear.", ref: "Quran 2:286" },
+      { text: "Successful are the believers who are humble in prayer.", ref: "Quran 23:1-2" },
+      { text: "Guard strictly your prayers.", ref: "Quran 2:238" },
       { text: "So remember Me; I will remember you.", ref: "Quran 2:152" },
+      { text: "Indeed, with hardship comes ease.", ref: "Quran 94:6" },
+      { text: "Allah does not burden a soul beyond what it can bear.", ref: "Quran 2:286" },
+      { text: "Verily, Allah is with the patient.", ref: "Quran 2:153" },
+      { text: "Do not despair of the mercy of Allah.", ref: "Quran 39:53" },
       { text: "He is with you wherever you are.", ref: "Quran 57:4" },
-      { text: "Your Lord is most forgiving, full of mercy.", ref: "Quran 18:58" },
-      { text: "My mercy encompasses all things.", ref: "Quran 7:156" },
-      { text: "Whoever relies upon Allah — He is sufficient for them.", ref: "Quran 65:3" },
-      { text: "Allah loves those who are constantly repentant.", ref: "Quran 2:222" },
-      { text: "Your Lord has not abandoned you nor is He displeased.", ref: "Quran 93:3" },
-      { text: "Truly with hardship comes ease.", ref: "Quran 94:6" },
-      { text: "And ask Allah of His bounty.", ref: "Quran 4:32" },
-      { text: "Allah is the best of providers.", ref: "Quran 62:11" },
-      { text: "Whoever gives thanks, it is only for their own benefit.", ref: "Quran 31:12" },
-      { text: "Allah loves the doers of good.", ref: "Quran 3:134" },
-      { text: "And He found you lost, and guided you.", ref: "Quran 93:7" },
-      { text: "We are closer to him than his jugular vein.", ref: "Quran 50:16" },
-      { text: "So pray to your Lord and sacrifice.", ref: "Quran 108:2" },
-      { text: "Turn to your Lord in repentance and submit to Him.", ref: "Quran 39:54" },
-      { text: "Whoever fears Allah — He will make for them a way out.", ref: "Quran 65:2" },
+      { text: "Indeed, Allah loves the doers of good.", ref: "Quran 3:134" },
+      { text: "Whoever relies upon Allah—He is sufficient for him.", ref: "Quran 65:3" },
       { text: "In the remembrance of Allah do hearts find rest.", ref: "Quran 13:28" },
-      { text: "He answers the call of the one who supplicates.", ref: "Quran 27:62" },
-      { text: "Every soul will taste death; then to Us you will return.", ref: "Quran 29:57" },
-      { text: "Establish prayer at the two ends of the day… indeed good deeds erase bad deeds.", ref: "Quran 11:114" },
-      { text: "Whoever does good — We will increase for him his good.", ref: "Quran 42:23" },
-      { text: "Whoever fears Allah — He will ease his matter for him.", ref: "Quran 65:4" },
-      { text: "Allah is with the patient.", ref: "Quran 2:153" },
-      { text: "And in Allah let the believers put their trust.", ref: "Quran 3:122" },
-      { text: "The mercy of Allah is near to the doers of good.", ref: "Quran 7:56" },
-      { text: "Allah does not allow the reward of the righteous to be lost.", ref: "Quran 9:120" },
-      { text: "If you are grateful, I will surely increase you.", ref: "Quran 14:7" },
-      { text: "Allah loves the righteous.", ref: "Quran 9:4" },
-      { text: "Whoever is patient and forgives — that is a matter requiring determination.", ref: "Quran 42:43" },
-      { text: "My Lord is vast in mercy.", ref: "Quran 6:147" },
-      { text: "He knows what is in the hearts.", ref: "Quran 57:6" },
-      { text: "Put your trust in the Ever-Living who does not die.", ref: "Quran 25:58" },
-      { text: "Allah loves those who rely upon Him.", ref: "Quran 3:159" },
-      { text: "The mercy of Allah is better than what they accumulate.", ref: "Quran 10:58" },
-      { text: "He is the Most Merciful of the merciful.", ref: "Quran 12:64" },
-      { text: "Whoever repents and does righteousness — Allah accepts repentance.", ref: "Quran 25:71" },
-      { text: "Whoever fears Allah — He will remove his sins.", ref: "Quran 65:5" },
-      { text: "And Allah forgives much.", ref: "Quran 5:13" },
-      { text: "So give good tidings to My servants.", ref: "Quran 39:17" },
-      { text: "He knows the whispering of the soul.", ref: "Quran 50:16" },
-      { text: "Allah does not fail His promise.", ref: "Quran 3:9" },
-      { text: "He found you in need and made you self-sufficient.", ref: "Quran 93:8" },
-      { text: "Your Lord is sufficient as a disposer of affairs.", ref: "Quran 17:65" },
-      { text: "He accepts repentance from His servants.", ref: "Quran 42:25" },
-      { text: "He has not placed upon you in the religion any difficulty.", ref: "Quran 22:78" },
-      { text: "Allah does not let the reward of the good go to waste.", ref: "Quran 18:30" },
-      { text: "Allah loves those who purify themselves.", ref: "Quran 9:108" },
-      { text: "Allah is with those who fear Him.", ref: "Quran 16:128" },
-      { text: "Do not weaken and do not grieve.", ref: "Quran 3:139" },
-      { text: "For those who fear Allah is a good return.", ref: "Quran 44:51" },
-      { text: "He gives life to the hearts.", ref: "Quran 57:17" },
-      { text: "He guides whom He wills.", ref: "Quran 28:56" },
-      { text: "Allah loves the patient.", ref: "Quran 3:146" },
-      { text: "To Allah belong the treasures of the heavens and the earth.", ref: "Quran 63:7" },
-      { text: "Is Allah not sufficient for His servant?", ref: "Quran 39:36" },
-      { text: "Call upon Allah, being sincere to Him.", ref: "Quran 40:14" },
-      { text: "Whoever follows My guidance will never go astray.", ref: "Quran 20:123" },
-      { text: "Allah loves the humble.", ref: "Quran 31:18" },
-      { text: "He raises those who believe in degrees.", ref: "Quran 58:11" },
-      { text: "They fall in prostration weeping, and it increases them in humility.", ref: "Quran 17:109" },
-      { text: "Your Lord is full of grace to the people.", ref: "Quran 10:60" },
-      { text: "Do good; Allah loves the doers of good.", ref: "Quran 2:195" },
-      { text: "Allah is gentle with His servants.", ref: "Quran 42:19" },
-      { text: "Allah guides whom He wills to a straight path.", ref: "Quran 2:213" },
-      { text: "Whoever fears Allah — He will grant him success.", ref: "Quran 8:29" },
-      { text: "Allah is ever Appreciative and Knowing.", ref: "Quran 4:147" },
-      { text: "He forgives whom He wills.", ref: "Quran 48:14" },
-      { text: "Allah is the best of planners.", ref: "Quran 3:54" },
-      { text: "To Allah return all matters.", ref: "Quran 3:109" },
-      { text: "He is the Most Kind to His servants.", ref: "Quran 42:19" },
-      { text: "Allah will bring about ease after hardship.", ref: "Quran 65:7" },
-      { text: "Do not lose hope in the relief from Allah.", ref: "Quran 12:87" },
-      { text: "Allah forgave them; indeed He is Forgiving and Merciful.", ref: "Quran 3:155" },
-      { text: "Establish prayer and give zakah.", ref: "Quran 2:110" },
-      { text: "The angels descend upon the steadfast.", ref: "Quran 41:30" },
-      { text: "He created death and life to test who is best in deeds.", ref: "Quran 67:2" },
-      { text: "Allah does not wrong anyone.", ref: "Quran 4:40" },
-      { text: "The mercy of your Lord is better than what they gather.", ref: "Quran 16:97" },
-      { text: "Your Lord is Forgiving, Merciful.", ref: "Quran 18:58" },
-      { text: "Ask Me and I will give you.", ref: "Quran 40:60" },
-      { text: "Whoever does an atom’s weight of good will see it.", ref: "Quran 99:7" },
-      { text: "Allah is with those who fear Him and do good.", ref: "Quran 16:128" },
-      { text: "Turn to Allah in repentance all together.", ref: "Quran 24:31" },
-      { text: "He hears the supplication.", ref: "Quran 3:38" },
-      { text: "Whoever obeys Allah has attained great success.", ref: "Quran 33:71" },
-      { text: "He is the Most Merciful.", ref: "Quran 59:10" },
-      { text: "Allah gives reward without measure.", ref: "Quran 24:38" },
-      { text: "Allah invites to the Home of Peace.", ref: "Quran 10:25" },
-      { text: "He forgives whatever is less than shirk for whom He wills.", ref: "Quran 4:48" },
-      { text: "Peace it is — until the rise of dawn.", ref: "Quran 97:5" },
-      { text: "Allah is swift in account.", ref: "Quran 3:19" },
-      { text: "Allah is over all things competent.", ref: "Quran 5:120" },
-      { text: "Whoever is grateful — his gratitude benefits himself.", ref: "Quran 31:12" },
-      { text: "Remind, for reminding benefits the believers.", ref: "Quran 51:55" },
-      { text: "Allah is with the doers of good.", ref: "Quran 29:69" },
-      { text: "Allah is Gentle and Merciful.", ref: "Quran 9:128" },
-      { text: "When you finish your duties, stand in worship.", ref: "Quran 94:7" },
+      { text: "Your Lord has not forsaken you.", ref: "Quran 93:3" },
       { text: "Allah is the Light of the heavens and the earth.", ref: "Quran 24:35" },
-      { text: "Allah is Pardoning, Forgiving.", ref: "Quran 4:99" },
-      { text: "Your Lord is full of forgiveness despite their wrongdoing.", ref: "Quran 13:6" },
-      { text: "Allah is the Protector of the believers.", ref: "Quran 3:68" },
-      { text: "Allah loves those who fight in His cause in rows.", ref: "Quran 61:4" },
-      { text: "Allah grants success to whom He wills.", ref: "Quran 35:2" },
-      { text: "He is Knowing and Wise.", ref: "Quran 66:2" },
-      { text: "He responds to the oppressed when they call.", ref: "Quran 27:62" },
-      { text: "Their Lord accepted their prayer.", ref: "Quran 3:195" },
-      { text: "Whoever hopes to meet his Lord — let him do righteous work.", ref: "Quran 18:110" },
-      { text: "Allah is Witness over all things.", ref: "Quran 22:17" },
-      { text: "Allah guides the hearts of those who believe.", ref: "Quran 64:11" },
-      { text: "Whoever does righteous deeds — their effort is not denied.", ref: "Quran 21:94" },
-      { text: "Your Lord knows what is within your souls.", ref: "Quran 17:25" },
-      { text: "The servants of the Most Merciful walk humbly.", ref: "Quran 25:63" },
-      { text: "Allah protects and supports the believers.", ref: "Quran 40:51" },
-      { text: "He is the One who accepts repentance.", ref: "Quran 9:104" },
+      { text: "And ask Allah of His bounty.", ref: "Quran 4:32" },
+      { text: "Allah is the best of planners.", ref: "Quran 3:54" },
+      { text: "Allah is with those who fear Him.", ref: "Quran 16:128" },
+      { text: "He guides whom He wills.", ref: "Quran 28:56" },
       { text: "Seek forgiveness of Allah; He is Forgiving and Merciful.", ref: "Quran 73:20" },
-      { text: "Your Lord never forgets.", ref: "Quran 19:64" },
+      { text: "My mercy encompasses all things.", ref: "Quran 7:156" },
+      { text: "Call upon Me; I will respond to you.", ref: "Quran 40:60" },
+      { text: "Every soul shall taste death.", ref: "Quran 3:185" },
+      { text: "And to Allah is the final return.", ref: "Quran 31:15" },
+      { text: "Allah does not let the reward of the righteous be lost.", ref: "Quran 18:30" },
+      { text: "Whoever does an atom's weight of good will see it.", ref: "Quran 99:7" },
+      { text: "Allah loves those who purify themselves.", ref: "Quran 9:108" },
+      { text: "Allah forgives all sins.", ref: "Quran 39:53" },
+      { text: "Whoever fears Allah—He will make a way out.", ref: "Quran 65:2" },
+      { text: "Allah will bring about ease after hardship.", ref: "Quran 65:7" },
+      { text: "He is the Most Merciful of the merciful.", ref: "Quran 12:64" },
+      { text: "Allah does not fail His promise.", ref: "Quran 3:9" },
+      { text: "Allah is Appreciative and Knowing.", ref: "Quran 4:147" },
+      { text: "Whoever gives thanks, it is for his own good.", ref: "Quran 31:12" },
+      { text: "In Allah let the believers trust.", ref: "Quran 3:122" },
       { text: "Allah loves those who trust in Him.", ref: "Quran 3:159" },
-      { text: "The promise of Allah is true.", ref: "Quran 30:60" },
-      { text: "Allah encompasses all things in knowledge.", ref: "Quran 65:12" },
-      { text: "To your Lord direct your longing.", ref: "Quran 94:8" },
-      { text: "The first deed for which a person will be brought to account on the Day of Resurrection is the prayer.", ref: "Sunan an-Nasa'i 468" },
-      { text: "Between a man and shirk and kufr is abandoning the prayer.", ref: "Sahih Muslim 82" },
-      { text: "Prayer is a light.", ref: "Sahih Muslim 223" },
-      { text: "Allah continues to stretch out His Hand at night to forgive the sinners of the day.", ref: "Sahih Muslim 2759" },
-      { text: "Allah is more pleased with the repentance of His servant than one who finds his lost camel in the desert.", ref: "Sahih al-Bukhari 6309" },
-      { text: "Whoever prays Fajr is under the protection of Allah.", ref: "Sahih Muslim 657" },
-      { text: "The closest a servant is to his Lord is during prostration.", ref: "Sahih Muslim 482" },
-      { text: "The five prayers erase sins committed between them.", ref: "Sahih Muslim 552" },
-      { text: "Actions are judged by intentions.", ref: "Sahih al-Bukhari 1" },
-      { text: "He who remembers Allah and he who does not are like the living and the dead.", ref: "Sahih al-Bukhari 6407" },
-      { text: "Whoever follows a path seeking knowledge, Allah will make a path to Paradise easy for him.", ref: "Sahih Muslim 2699" },
-      { text: "Allah does not show mercy to those who do not show mercy to others.", ref: "Sahih al-Bukhari 7376" },
-      { text: "None of you truly believes until he loves for his brother what he loves for himself.", ref: "Sahih al-Bukhari 13" },
-      { text: "Whoever believes in Allah and the Last Day, let him speak good or remain silent.", ref: "Sahih al-Bukhari 6475" },
-      { text: "The strong man is not the one who can wrestle; the strong man is the one who controls himself at times of anger.", ref: "Sahih al-Bukhari 6114" },
-      { text: "Smiling in the face of your brother is charity.", ref: "Jami at-Tirmidhi 1956 (Hasan)" },
-      { text: "The most beloved deeds to Allah are the most consistent, even if small.", ref: "Sahih al-Bukhari 6464" },
-      { text: "Whoever pardons others, Allah will increase him in honor.", ref: "Sahih Muslim 2588" },
-      { text: "Allah loves those who repent again and again.", ref: "Sunan Ibn Majah 4250 (Sahih)" },
-      { text: "Whoever prays Isha in congregation, it is as if he prayed half the night.", ref: "Sahih Muslim 656" },
-      { text: "The believer is not stung from the same hole twice.", ref: "Sahih al-Bukhari 6133" },
-      { text: "Dua is worship.", ref: "Sunan Ibn Majah 3828 (Sahih)" },
-      { text: "Modesty is part of faith.", ref: "Sahih Muslim 35" },
-      { text: "The world is cursed except the remembrance of Allah and what is connected to it.", ref: "Sunan Ibn Majah 4112 (Sahih)" },
-      { text: "Whoever builds a mosque for Allah, Allah will build for him a house in Paradise.", ref: "Sahih al-Bukhari 450" },
-      { text: "The prayer of a person in congregation is 27 times more in reward.", ref: "Sahih al-Bukhari 645" },
-      { text: "The servant is closest to Allah during sujood, so increase supplication.", ref: "Sahih Muslim 482" },
-      { text: "Charity does not decrease wealth.", ref: "Sahih Muslim 2588" },
-      { text: "Allah does not look at your appearance or wealth, but at your hearts and deeds.", ref: "Sahih Muslim 2564" },
-      { text: "Whoever is deprived of gentleness is deprived of all good.", ref: "Sahih Muslim 2592" }
+      { text: "Allah does not wrong anyone.", ref: "Quran 4:40" },
+      { text: "He knows what is in the hearts.", ref: "Quran 57:6" },
+      { text: "Your Lord is forgiving and merciful.", ref: "Quran 18:58" },
+      { text: "He gives life to the hearts.", ref: "Quran 57:17" },
+      { text: "Peace it is until the dawn.", ref: "Quran 97:5" },
+      { text: "Your Lord is sufficient as a guardian.", ref: "Quran 17:65" },
+      { text: "Allah grants success to whom He wills.", ref: "Quran 35:2" },
+      { text: "To Allah belong the treasures of heavens and earth.", ref: "Quran 63:7" },
+      { text: "Whoever fears Allah, He will forgive his sins.", ref: "Quran 65:5" },
+      { text: "Turn to Allah in repentance.", ref: "Quran 39:54" },
+      { text: "The angels descend upon the steadfast.", ref: "Quran 41:30" },
+      { text: "He knows the whispering of the soul.", ref: "Quran 50:16" },
+      { text: "Whoever fears Allah, He will grant success.", ref: "Quran 8:29" },
+      { text: "Allah is swift in account.", ref: "Quran 3:19" },
+      { text: "He responds to the oppressed when they call.", ref: "Quran 27:62" },
+      { text: "And Allah is over all things competent.", ref: "Quran 5:120" },
+      { text: "Do not lose hope in Allah's mercy.", ref: "Quran 12:87" },
+      { text: "Your Lord is full of grace to mankind.", ref: "Quran 10:60" },
+      { text: "Allah loves the righteous.", ref: "Quran 9:4" },
+      { text: "He found you lost and guided you.", ref: "Quran 93:7" },
+      { text: "To Allah return all matters.", ref: "Quran 3:109" },
+      { text: "He forgives whom He wills.", ref: "Quran 48:14" },
+      { text: "Remind, for reminding benefits the believers.", ref: "Quran 51:55" },
+      { text: "Allah is Witness over all things.", ref: "Quran 22:17" },
+      { text: "The mercy of Allah is near to the doers of good.", ref: "Quran 7:56" },
+      { text: "He accepts repentance from His servants.", ref: "Quran 42:25" },
+      { text: "Allah does not let the reward of the good go to waste.", ref: "Quran 18:30" },
+      { text: "Whoever is grateful, Allah increases him.", ref: "Quran 14:7" },
+      { text: "Your Lord never forgets.", ref: "Quran 19:64" },
+      { text: "Allah is Gentle and Merciful.", ref: "Quran 9:128" },
+      { text: "He is the Most Kind to His servants.", ref: "Quran 42:19" },
+      { text: "And Allah forgives much.", ref: "Quran 5:13" },
+      { text: "Call upon Allah, being sincere to Him.", ref: "Quran 40:14" },
+      { text: "Put your trust in the Ever-Living who does not die.", ref: "Quran 25:58" },
+      { text: "He raises whom He wills.", ref: "Quran 6:83" },
+      { text: "Whoever repents and does righteousness—Allah accepts.", ref: "Quran 25:71" },
+      { text: "He loves those who give charity.", ref: "Quran 2:195" },
+      { text: "Allah is with the patient.", ref: "Quran 2:153" },
+      { text: "Whoever obeys Allah has attained success.", ref: "Quran 33:71" },
+      { text: "Your Lord has not placed hardship in the religion.", ref: "Quran 22:78" },
+      { text: "Allah is the Protector of the believers.", ref: "Quran 3:68" },
+      { text: "Allah forgives whatever is less than shirk.", ref: "Quran 4:48" },
+      { text: "And He is the Most Merciful.", ref: "Quran 59:10" },
+      { text: "Whoever follows My guidance will never go astray.", ref: "Quran 20:123" },
+      { text: "He is with those who fear Him.", ref: "Quran 16:128" },
+      { text: "He hears the supplication.", ref: "Quran 3:38" },
+      { text: "Allah is the Light of the heavens and the earth.", ref: "Quran 24:35" },
+      { text: "Allah does not wrong the people at all.", ref: "Quran 10:44" },
+      { text: "And Allah invites to the Home of Peace.", ref: "Quran 10:25" },
+      { text: "Those who believe and do righteous deeds—Paradise awaits them.", ref: "Quran 18:107" }
     ];
 
 
+    const hadith = [
+      "Actions are judged by intentions. — Bukhari",
+      "The strong one controls his anger. — Bukhari",
+      "Smiling at your brother is charity. — Tirmidhi",
+      "Whoever prays Fajr is under Allah's protection. — Muslim",
+      "The closest a servant is to Allah is during sujood. — Muslim",
+      "The five prayers erase sins. — Muslim",
+      "Allah does not show mercy to those who do not show mercy. — Bukhari",
+      "Whoever does not thank people has not thanked Allah. — Tirmidhi",
+      "A believer is not stung twice. — Bukhari",
+      "Dua is worship. — Ibn Majah",
+      "The world is cursed except dhikr. — Ibn Majah",
+      "Charity does not decrease wealth. — Muslim",
+      "Allah is more merciful to His servants than a mother to her child. — Bukhari",
+      "Modesty is part of faith. — Muslim",
+      "The most beloved deeds are those done regularly. — Bukhari",
+      "Love for your brother what you love for yourself. — Bukhari",
+      "Good words are charity. — Bukhari",
+      "Whoever is deprived of gentleness is deprived of all good. — Muslim",
+      "Prayer in congregation is 27 times better. — Bukhari",
+      "The best of you are best to their families. — Tirmidhi",
+      "Believers are kind and gentle. — Tirmidhi",
+      "Anger comes from the devil. — Tirmidhi",
+      "Feed the hungry and free the captives. — Bukhari",
+      "Your smile is sadaqah. — Tirmidhi",
+      "Purity is half of faith. — Muslim",
+      "The one who repents from sin is like one who never sinned. — Ibn Majah",
+      "A Muslim is one from whose tongue and hands people are safe. — Bukhari",
+      "Whoever seeks knowledge, Allah eases his path to Paradise. — Muslim",
+      "Make things easy, not difficult. — Bukhari",
+      "Allah loves those who repent constantly. — Ibn Majah",
+      "The best of you are those who learn Qur’an and teach it. — Bukhari",
+      "Speak good or remain silent. — Bukhari",
+      "Prayer is light. — Muslim",
+      "Sadaqah extinguishes sins. — Tirmidhi",
+      "Do not envy one another. — Muslim",
+      "Allah loves gentleness. — Muslim",
+      "Look at those below you (not above). — Muslim",
+      "Leaving useless talk is part of a good Muslim. — Tirmidhi",
+      "The son of Adam fills no vessel worse than his stomach. — Tirmidhi",
+      "The best charity is that given in secret. — Bukhari",
+      "Salah is the pillar of religion. — Tirmidhi",
+      "The signs of a hypocrite are three… — Bukhari",
+      "Whoever humbles himself for Allah, Allah raises him. — Muslim",
+      "Whoever guides to good gets the reward of the doer. — Muslim",
+      "Maintain family ties for rizq and long life. — Bukhari",
+      "The best of you are best in manners. — Bukhari",
+      "Allah loves excellence in everything. — Muslim",
+      "When Allah loves a servant, He tests him. — Tirmidhi",
+      "No fatigue, illness, worry, or grief touches a believer except Allah washes sins. — Bukhari",
+      "The believer does not slander or curse. — Tirmidhi",
+      "None of you has faith until he wishes for his brother what he wishes for himself. — Muslim",
+      "The upper hand (giving) is better than the lower hand. — Bukhari",
+      "A kind word is charity. — Bukhari",
+      "Gentleness adorns everything. — Muslim",
+      "The most beloved people to Allah are those most beneficial to others. — Tabarani (Hasan)",
+      "The best deeds are prayer on time. — Bukhari",
+      "Do not be angry. — Bukhari",
+      "A believer is a mirror to his brother. — Abu Dawood (Hasan)",
+      "Allah helps a servant as long as he helps his brother. — Muslim",
+      "The best people are those with the best character. — Tirmidhi",
+      "He who is not thankful for little is not thankful for much. — Ahmad (Sahih)",
+      "A believer is not a liar. — Ibn Majah",
+      "Whoever is pleased with Allah as Lord, Islam as religion, Muhammad as prophet will taste faith. — Muslim",
+      "Your deeds will not enter you into Jannah, only Allah's mercy. — Muslim",
+      "Whoever fasts Ramadan with faith will have sins forgiven. — Bukhari",
+      "The prayer of a fasting person is not rejected. — Tirmidhi",
+      "When half of the night passes, Allah descends and says: Who seeks forgiveness? — Muslim",
+      "Whoever recites Ayatul Kursi after every prayer, nothing stops him from Paradise except death. — Nasa'i (Sahih)",
+      "Whoever builds a mosque, Allah builds for him a house in Jannah. — Bukhari",
+      "The best of you are those whose hearts are soft. — Tirmidhi",
+      "Backbiting is worse than adultery. — Bayhaqi (Sahih meaning)",
+      "A believer does not harm others. — Tirmidhi",
+      "Allah loves the one who forgives. — Muslim",
+      "Whoever alleviates a believer's hardship, Allah will alleviate his hardship. — Muslim",
+      "Allah is beautiful and loves beauty. — Muslim",
+      "A believer's smile is sadaqah. — Tirmidhi",
+      "The worst among people are those whom people avoid due to their bad manners. — Bukhari",
+      "A true Muslim keeps promises. — Bukhari",
+      "The best companions are those best in character. — Tirmidhi",
+      "No one will enter Paradise who has arrogance in his heart. — Muslim",
+      "Love each other for Allah. — Muslim",
+      "Allah accepts repentance until the soul reaches the throat. — Tirmidhi",
+      "The eyes commit zina, the hands commit zina — but the prayer wipes it away. — Muslim",
+      "The most beloved words to Allah: SubhanAllah, Alhamdulillah, La ilaha illallah, Allahu Akbar. — Muslim",
+      "Surah Al-Ikhlas is equal to one-third of the Qur'an. — Muslim",
+      "The best supplication is Al-Hamdulillah. — Ibn Majah",
+      "Whoever gives up arguing even when right, Allah builds a house in Jannah. — Tirmidhi",
+      "Do not belittle even a small act of kindness. — Muslim"
+    ];
 
-    function islamicReminder(name) {
-      const bg = document.getElementById("reminderPopupBG");
-      const verse = quranVerses[Math.floor(Math.random() * quranVerses.length)];
 
-      document.getElementById("reminderTitle").textContent =
-        name + ", your reminder 🌙";
+    function showIslamicReminder() {
+      const v = quran[Math.floor(Math.random() * quran.length)];
 
-      document.getElementById("reminderText").innerHTML =
-        verse.text + "<br><br><small style='color:#8a6f56'>" + verse.ref + "</small>";
+      // Quran text + reference in black
+      document.getElementById("reminderQuran").innerHTML = `
+    <span style="color:#000;">${v.text}</span><br>
+    <span style="color:#000;font-size:13px;opacity:0.75;">${v.ref}</span>
+  `;
 
-      bg.style.display = "flex";
+      // Hadith text in black
+      document.getElementById("reminderHadith").style.color = "#000";
+      document.getElementById("reminderHadith").textContent =
+        hadith[Math.floor(Math.random() * hadith.length)];
 
-      confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+      // Headings dark blue
+      document.getElementById("reminderQuranHeading").style.color = "#0d1a6b";
+      document.getElementById("reminderHadithHeading").style.color = "#0d1a6b";
+
+      document.getElementById("reminderPopup").style.display = "flex";
     }
 
     function closeReminder() {
-      document.getElementById("reminderPopupBG").style.display = "none";
+      document.getElementById("reminderPopup").style.display = "none";
     }
-  </script>
 
+
+    /* ---------- History page ---------- */
+    function openHistory() { window.location.href = "history.html"; }
+
+  </script>
 </body>
 
 </html>
